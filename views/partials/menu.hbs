@@ -1,0 +1,72 @@
+<header>
+    <nav>
+        <ul class="menu">
+            <li><a href="/">Home</a></li>
+            {{#if user}}
+            <li><a href="/user/profile">Profile</a></li>
+            <li><a href="/auth/logout">Logout</a></li>
+            {{else}}
+            <li><a href="/auth/login" id="logoutButton">Login</a></li>
+            <li><a href="/auth/register">Register</a></li>
+            {{/if}}
+        </ul>
+    </nav>
+</header>
+<div class="scroll-bar">
+    <marquee behavior="scroll" direction="left">
+        This application is currently in beta testing. Please report any issues or feedback to help us improve.
+        Unauthorized use or misuse of this application is strictly prohibited and will be subject to applicable
+        policies.
+    </marquee>
+</div>
+<style>
+    /* Header */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f4f4f9;
+        padding: 1rem 2rem;
+        border-bottom: 2px solid #ddd;
+        position: fixed;
+        /* Ensure the header stays at the top */
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 10;
+    }
+
+    header .logo-header {
+        display: flex;
+        align-items: center;
+    }
+
+    header img {
+        height: 50px;
+        /* Adjust logo size */
+        margin-right: 10px;
+    }
+
+    header nav ul {
+        list-style: none;
+        display: flex;
+        gap: 1.5rem;
+        /* Space between menu items */
+        margin: 0;
+    }
+
+    header nav ul li {
+        display: inline;
+    }
+
+    header nav ul li a {
+        text-decoration: none;
+        color: #3c40c6;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+    header nav ul li a:hover {
+        color: #575fcf;
+    }
+</style>

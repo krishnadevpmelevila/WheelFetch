@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WheelFetch</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+  <div id="errorModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <p id="errorMessage"></p>
+    </div>
+  </div>
+
+
+  <div class="logo-container">
+    <img src="/images/Wheel.svg?v=1" alt="WheelFetch Logo" class="logo">
+
+  </div>
+
+  <div class="wrapper">
+    <div class="label">Enter the Registration Number:</div>
+    <div class="searchBar">
+      <input id="searchQueryInput" type="text" name="reg" placeholder="Search" value="" />
+      <button id="searchQuerySubmit" type="submit" name="searchQuerySubmit">Search</button>
+    </div>
+    <div class="loader" id="loader"></div>
+    <div id="output" style="margin-top: 20px;"></div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 WheelFetch. All rights reserved. | <a href="#">Privacy Policy</a></p>
+  </footer>
+  <script>
+    const searchInput = document.getElementById("searchQueryInput");
+    const searchButton = document.getElementById("searchQuerySubmit");
+    const loader = document.getElementById("loader");
+    const errorModal = document.getElementById("errorModal");
+    const errorMessage = document.getElementById("errorMessage");
+    const closeModal = document.getElementById("closeModal");
+
+    const searchVehicle = async () => {
+      const regNumber = searchInput.value;
+
+      if (!regNumber) {
+        // Show modal for empty registration number
+        errorMessage.textContent = "Please enter a registration number.";
+        errorModal.style.display = "block";
+        return;
+      }
+
+      try {
+        // Show loader before fetch
+        loader.style.display = "block";
+
+        const response = await fetch("http://localhost:3000/api/vehicle", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ regNumber }),
+        });
+
+        const data = await response.json();
+
+        if (data.error || !data.data) {
+          // Show modal if vehicle is not found or error occurred
+          errorMessage.textContent =
+            "This vehicle is not registered or no data available.";
+          errorModal.style.display = "block";
+        } else {
+          if(data.data.vehicle_number === ''){
+            errorMessage.textContent = "This vehicle is not registered or no data available.";
+            errorModal.style.display = "block";
+            return;
+          }
+
+          console.log(data.data.vehicle_number);
+          // Create a table dynamically
+          const table = `
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Vehicle Number</strong></td><td>${data.data.vehicle_number}</td></tr>
+              <tr><td><strong>Owner Name</strong></td><td>${data.data.owner}</td></tr>
+              <tr><td><strong>Vehicle Model</strong></td><td>${data.data.model}</td></tr>
+              <tr><td><strong>Registration Authority</strong></td><td>${data.data.reg_authority}</td></tr>
+              <tr><td><strong>Permanent Address</strong></td><td>${data.data.permanent_address}</td></tr>
+              <tr><td><strong>Vehicle Manufacturer</strong></td><td>${data.data.vehicle_manufacturer_name}</td></tr>
+              <tr><td><strong>Vehicle Color</strong></td><td>${data.data.vehicle_colour}</td></tr>
+              <tr><td><strong>RC Expiry Date</strong></td><td>${data.data.rc_expiry_date}</td></tr>
+              <tr><td><strong>Vehicle Insurance Upto</strong></td><td>${data.data.vehicle_insurance_upto}</td></tr>
+              <tr><td><strong>Chassis Number</strong></td><td>${data.data.chassis}</td></tr>
+              <tr><td><strong>Class</strong></td><td>${data.data.class}</td></tr>
+              <tr><td><strong>Body Type</strong></td><td>${data.data.body_type}</td></tr>
+              <tr><td><strong>Registration Date</strong></td><td>${data.data.reg_date}</td></tr>
+              <tr><td><strong>Mobile Number</strong></td><td>${data.data.mobile_number || "N/A"}</td></tr>
+              <tr><td><strong>Vehicle Tax Upto</strong></td><td>${data.data.vehicle_tax_upto}</td></tr>
+              <tr><td><strong>Vehicle Category</strong></td><td>${data.data.vehicle_category}</td></tr>
+              <tr><td><strong>Engine Number</strong></td><td>${data.data.engine}</td></tr>
+              <tr><td><strong>Status</strong></td><td>${data.data.status}</td></tr>
+              <tr><td><strong>RC Financer</strong></td><td>${data.data.rc_financer || "N/A"}</td></tr>
+            </tbody>
+          </table>
+        `;
+
+          const outputDiv = document.getElementById("output");
+          outputDiv.innerHTML = table;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        errorMessage.textContent = "Failed to fetch vehicle details. Try again.";
+        errorModal.style.display = "block";
+      } finally {
+        // Hide loader after fetch
+        loader.style.display = "none";
+      }
+    };
+
+    // Close modal when user clicks on the close button
+    closeModal.addEventListener("click", () => {
+      errorModal.style.display = "none";
+    });
+
+    // Event listener for the search button
+    searchButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      searchVehicle();
+    });
+
+    // Event listener for pressing Enter key
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        searchVehicle();
+      }
+    });
+  </script>
+
+
+</body>
+
+</html>
